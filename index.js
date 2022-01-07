@@ -1,14 +1,12 @@
 'use strict';
 
 import fetch from "node-fetch";
-import express from 'express'
 import {TOKEN} from  './config.js'
 import {Telegraf} from 'telegraf'
 const apikey = '4c62d4734ce269a5daa0ab6aa0dd4a82';
 let url = (city) =>
     `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apikey}`;
 
-const app = express()
 const bot = new Telegraf(TOKEN)
 
 bot.start(ctx => {
@@ -28,11 +26,30 @@ bot.on('edited_message', ctx => {
 })
 
 bot.hears('/help',ctx => {
-    ctx.reply('Больше информации будет позже')
+    ctx.reply('Чтобы начать пользоваться ботом достаточно просто ввести город, погода в котором вас интересует')
 })
 
+bot.hears('/catfact',async ctx => {
+        const CatFact = async ( )=> {
+            ctx.reply('Простите, факты только на английском языке🐱');
+            try {
+                await fetch('https://catfact.ninja/fact')
+                    .then(function (resp) {
+                        return resp.json()
+                    })
+                    .then(function (data) {
+                        ctx.reply(data.fact);
+                    })
+            }
+            catch(e){
+                ctx.reply('Простите, я сломался, мой создатель не очень смышленый')
+            }
+        }
+    CatFact ( )
+    })
+
 bot.launch()
-app.listen(() => console.log(`My Bot started`))
+console.log(`My Bot started`)
 
 bot.on('text', async (ctx) => {
 
@@ -42,13 +59,13 @@ bot.on('text', async (ctx) => {
         const temp = ToCeliac(weather.main.temp);
         const formatData = `
            Город🏘: ${city},
-           Температура🌡: ${temp},
-           Скорость ветра🌬: ${weather.wind.speed},
-           Влажность💦: ${weather.main.humidity}%`
+           \nТемпература🌡: ${temp},
+           \nСкорость ветра🌬: ${weather.wind.speed},
+           \nВлажность💦: ${weather.main.humidity}%`
         ctx.reply(formatData)
     };
 
-    const weatherBallon = async ( city)=> {
+    const FindDataForWeather = async ( city)=> {
         try {
             await fetch(url(city), {origin: 'cors'})
                 .then(function (resp) {
@@ -56,7 +73,6 @@ bot.on('text', async (ctx) => {
                 }) // превращает данные в json
                 .then(function (data) {
                     showWeather(data);
-                    console.log(data)
                 })
         }
         catch(e){
@@ -64,5 +80,5 @@ bot.on('text', async (ctx) => {
             }
     }
     const city = ctx.message.text
-    weatherBallon( city )
+    FindDataForWeather( city )
 })
