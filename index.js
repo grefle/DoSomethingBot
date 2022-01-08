@@ -40,7 +40,7 @@ bot.hears("/help",ctx => {
 //Сообщение при команде для выдачи фактов про котиков
 bot.hears("/catfact",async ctx => {
         const CatFact = async ( )=> {
-            ctx.reply("Простите, факты только на английском языке🐱");
+            ctx.reply("Надеюсь эти факты улучшит ваше настроение, несмотря на погоду🐱");
             try {
                 await fetch("https://catfact.ninja/fact")
                     .then(function (resp) {
@@ -62,8 +62,8 @@ console.log("My Bot started")
 
 //Сообщение при вводе команды и города
 bot.on("text", async (ctx) => {
-    if (ctx.message.text.includes("/weather")) {
-        const userMessage=ctx.message.text
+    const userMessage=ctx.message.text
+    if (userMessage.includes("/weather")) {
         const city = userMessage.substr(9, userMessage.length)
 
         const ToCeliac = (degree) => (degree - 273).toFixed(2);
@@ -76,7 +76,9 @@ bot.on("text", async (ctx) => {
            \nТемпература🌡: ${temp}
            \nСкорость ветра🌬: ${data.wind.speed}
            \nВлажность💦: ${data.main.humidity}%`
-            ctx.replyWithPhoto({ source: "./images/"+data.weather[0].main+".jpg" }, { caption: formatData })
+            ctx.replyWithPhoto(
+                {source: "./images/"+data.weather[0].main+".jpg"},
+                {caption: formatData})
         };
 
         const FindDataForWeather = async (city) => {
@@ -84,17 +86,15 @@ bot.on("text", async (ctx) => {
                 await fetch(url(city))
                     .then(function (resp) {
                         return resp.json()
-                    }) // превращает данные в json
+                    })                               // превращает данные в json
                     .then(function (data) {
-                        showWeather(data);
+                        showWeather(data);           // передает данные другой функци
                     })
             } catch (e) {
                 ctx.reply("Такого города не существует, повторите пожалуйста запрос")
             }
         }
-
         await FindDataForWeather(city)
-
     } else {
         ctx.reply("Такая команда не найдена, воспользуйтесь командой /help")
     }
