@@ -76,20 +76,7 @@ bot.on("text", async (ctx) => {
            \nТемпература🌡: ${temp}
            \nСкорость ветра🌬: ${data.wind.speed}
            \nВлажность💦: ${data.main.humidity}%`
-            switch (data.weather[0].main) {
-                case "Clear":
-                    ctx.replyWithPhoto({ source: "./images/Clear.jpg" }, { caption: formatData })
-                    break;
-                case "Clouds":
-                    ctx.replyWithPhoto({source:"./images/Clouds.jpg"}, { caption: formatData })
-                    break;
-                case "Rain":
-                    ctx.replyWithPhoto({source:"./images/Rain.jpg"}, { caption: formatData })
-                    break;
-                case "Snow":
-                    ctx.replyWithPhoto({source:"./images/Snow.jpg"}, { caption: formatData })
-                    break;
-            }
+            ctx.replyWithPhoto({ source: "./images/"+data.weather[0].main+".jpg" }, { caption: formatData })
         };
 
         const FindDataForWeather = async (city) => {
