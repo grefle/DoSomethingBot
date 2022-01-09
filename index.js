@@ -1,7 +1,7 @@
 "use strict";
 
 import fetch from "node-fetch";
-import {TOKEN, apikey} from  "./config.js"
+import {TOKEN, apikey, clothes} from  "./config.js"
 import {Telegraf} from "telegraf"
 
 const url = (city) =>
@@ -40,20 +40,20 @@ bot.hears("/help",ctx => {
 //Сообщение при команде для выдачи фактов про котиков
 bot.hears("/catfact",async ctx => {
         const CatFact = async ( )=> {
-            ctx.reply("Надеюсь эти факты улучшит ваше настроение, несмотря на погоду🐱");
             try {
-                await fetch("https://catfact.ninja/fact")
+                await fetch("https://catfact.ninja/fact")   // заставляет ждать выполнения запроса серверу
                     .then(function (resp) {
                         return resp.json()
-                    })
+                    })                               // превращает данные в json
                     .then(function (data) {
-                        ctx.reply(data.fact);
+                        ctx.reply(data.fact);        // по цепочке then-ов отвечает пользователю
                     })
             }
             catch(e){
                 ctx.reply("Простите, я сломался, мой создатель не очень смышленый")
             }
         }
+    ctx.reply("Надеюсь эти факты улучшит ваше настроение, несмотря на погоду🐱");
     await CatFact ( )
     })
 
@@ -63,37 +63,48 @@ console.log("My Bot started")
 //Сообщение при вводе команды и города
 bot.on("text", async (ctx) => {
     const userMessage=ctx.message.text
-    if (userMessage.includes("/weather")) {
-        const city = userMessage.substr(9, userMessage.length)
+    const city = userMessage.substr(9, userMessage.length)
+    const ToCeliac = (degree) => (degree - 273).toFixed(2);
 
-        const ToCeliac = (degree) => (degree - 273).toFixed(2);
-
-        const showWeather = (data) => {
+    const showWeather = async (data) => {
+        try{
             const temp = ToCeliac(data.main.temp);
             const formatData = `
-           Город🏘: ${city}
-           \nОбщая погода🧾: ${data.weather[0].main}
-           \nТемпература🌡: ${temp}
-           \nСкорость ветра🌬: ${data.wind.speed}
-           \nВлажность💦: ${data.main.humidity}%`
-            ctx.replyWithPhoto({source: "./images/"+data.weather[0].main+".jpg"},{caption: formatData})
-        };
+                Город🏘: ${city}
+                \nОбщая погода🧾: ${data.weather[0].main}
+                \nТемпература🌡: ${temp}
+                \nСкорость ветра🌬: ${data.wind.speed}
+                \nВлажность💦: ${data.main.humidity}%`
+                await ctx.replyWithPhoto({source: "./images/"+data.weather[0].main+".jpg"},{caption: formatData})
+                for (let key in clothes) {
+                    if (key==data.weather[0].main){
+                        ctx.reply(clothes[key])
 
-        const FindDataForWeather = async (city) => {
-            try {
-                await fetch(url(city))
-                    .then(function (resp) {
-                        return resp.json()
-                    })                               // превращает данные в json
-                    .then(function (data) {
-                        showWeather(data);           // передает данные другой функци
-                    })
-            } catch (e) {
-                ctx.reply("Такого города не существует, повторите пожалуйста запрос")
-            }
+                    }
+                }
+
+        } catch (e){
+            ctx.reply("Такого города не существует или данные о погоде повреждены, повторите пожалуйста запрос")
         }
+    };
+
+    const FindDataForWeather = async (city) => {
+        try {
+            await fetch(url(city))               // заставляет ждать выполнения запроса серверу
+                .then(function (resp) {
+                    return resp.json()
+                })                               // превращает данные в json
+                .then(function (data) {
+                    showWeather(data);           // передает данные другой функци
+                })
+        } catch (e) {
+            ctx.reply("Такого города не существует, повторите пожалуйста запрос")
+        }
+    }
+    if (userMessage.includes("/weather")) {
         await FindDataForWeather(city)
     } else {
         ctx.reply("Такая команда не найдена, воспользуйтесь командой /help")
     }
+    console.log("Кто-то запустил бота")
 })
