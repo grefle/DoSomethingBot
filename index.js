@@ -55,6 +55,7 @@ bot.hears("/catfact",async ctx => {
         }
     ctx.reply("Надеюсь эти факты улучшит ваше настроение, несмотря на погоду🐱");
     await CatFact ( )
+    console.log("Кто-то запустил бота")
     })
 
 bot.launch()
@@ -72,6 +73,7 @@ bot.on("text", async (ctx) => {
             const formatData = `
                 Город🏘: ${city}
                 \nОбщая погода🧾: ${data.weather[0].main}
+                \nКонкретней о погоде🖊: ${data.weather[0].description}
                 \nТемпература🌡: ${temp}
                 \nСкорость ветра🌬: ${data.wind.speed}
                 \nВлажность💦: ${data.main.humidity}%`
@@ -79,7 +81,6 @@ bot.on("text", async (ctx) => {
                 for (let key in clothes) {
                     if (key==data.weather[0].main){
                         ctx.reply(clothes[key])
-
                     }
                 }
 
