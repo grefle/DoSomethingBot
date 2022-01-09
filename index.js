@@ -76,9 +76,7 @@ bot.on("text", async (ctx) => {
            \nТемпература🌡: ${temp}
            \nСкорость ветра🌬: ${data.wind.speed}
            \nВлажность💦: ${data.main.humidity}%`
-            ctx.replyWithPhoto(
-                {source: "./images/"+data.weather[0].main+".jpg"},
-                {caption: formatData})
+            ctx.replyWithPhoto({source: "./images/"+data.weather[0].main+".jpg"},{caption: formatData})
         };
 
         const FindDataForWeather = async (city) => {
