@@ -9,6 +9,9 @@ const url = (city) =>
 
 const bot = new Telegraf(TOKEN)
 
+bot.launch()
+console.log("Бот працює! Нік в телеграмі: @SomethingForBot")
+
 //Старт бота
 bot.start(ctx => {
     ctx.reply("Слава Україні!")
@@ -46,7 +49,8 @@ bot.hears("/catfact",async ctx => {
                         return resp.json()
                     })                               // перетворює дані на json
                     .then(function (data) {
-                        ctx.reply(data.fact);        // по ланцюжку then-ів відповідає користувачеві
+                        ctx.reply(data.fact);
+                        // по ланцюжку then-ів відповідає користувачеві
                     })
             }
             catch(e){
@@ -57,9 +61,6 @@ bot.hears("/catfact",async ctx => {
     await CatFact ( )
     console.log("Хтось запустив бота")
     })
-
-bot.launch()
-console.log("Бот працює! Нік в телеграмі: @SomethingForBot")
 
 //Повідомлення при введенні команди та міста
 bot.on("text", async (ctx) => {
@@ -105,7 +106,7 @@ bot.on("text", async (ctx) => {
     if (userMessage.includes("/weather")) {
         await FindDataForWeather(city)
     } else {
-        ctx.reply("Такая команда не найдена, воспользуйтесь командой /help")
+        ctx.reply("Такої команди не знайдено, скористайтеся командою /help")
     }
-    console.log("Кто-то запустил бота")
+    console.log("Хтось запустив бота")
 })
